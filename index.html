@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rick & Morty System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- PANTALLA: LOGIN -->
+    <section id="view-login" class="view-container">
+        <div class="auth-box">
+            <h1 class="rm-title">Rick & Morty</h1>
+            <h2>Iniciar Sesión</h2>
+            <form id="form-login">
+                <input type="text" id="login-username" placeholder="Usuario" required>
+                <input type="password" id="login-password" placeholder="Contraseña" required>
+                <button type="submit" class="btn-primary">Entrar al Portal</button>
+            </form>
+            <div class="auth-links">
+                <a href="#" onclick="navigateTo('view-register')">¿No tienes cuenta? Regístrate</a>
+                <a href="#" onclick="navigateTo('view-recovery')">¿Olvidaste tu contraseña?</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- PANTALLA: REGISTRO -->
+    <section id="view-register" class="view-container hidden">
+        <div class="auth-box">
+            <h1 class="rm-title">Registro</h1>
+            <form id="form-register">
+                <input type="text" id="reg-username" placeholder="Nuevo Usuario" required>
+                <input type="password" id="reg-password" placeholder="Contraseña" required>
+                <button type="submit" class="btn-primary">Crear Cuenta</button>
+                <button type="button" class="btn-secondary" onclick="navigateTo('view-login')">Volver</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- PANTALLA: RECUPERACIÓN -->
+    <section id="view-recovery" class="view-container hidden">
+        <div class="auth-box">
+            <h1 class="rm-title">Recuperación</h1>
+            <p class="subtitle">Ingresa tu usuario para cambiar la contraseña</p>
+            <form id="form-recovery">
+                <input type="text" id="rec-username" placeholder="Usuario existente" required>
+                <input type="password" id="rec-new-password" placeholder="Nueva Contraseña" required>
+                <button type="submit" class="btn-primary">Actualizar Contraseña</button>
+                <button type="button" class="btn-secondary" onclick="navigateTo('view-login')">Volver</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- PANTALLA: DASHBOARD -->
+    <section id="view-dashboard" class="view-container hidden">
+        <header class="navbar">
+            <h2 class="rm-title-small">El maravilloso sistema de Rickardo Y Manolo </h2>
+            <div>
+                <button class="btn-theme theme-toggle-btn" onclick="toggleTheme()" aria-label="Cambiar tema"></button>
+                <span id="logged-user-name" style="margin-right: 15px;">Usuario</span>
+                <button class="btn-danger" onclick="logout()">Salir</button>
+            </div>
+        </header>
+        
+        <div class="dashboard-content">
+            <div class="view-toggles">
+                <button id="tab-characters" class="btn-primary" onclick="switchTab('characters')">Base de Personajes</button>
+                <button id="tab-episodes" class="btn-secondary" onclick="switchTab('episodes')">Base de Episodios</button>
+            </div>
+            
+            <div class="toolbar">
+                <input type="text" id="search-input" placeholder="Buscar por nombre en toda la API..." onkeyup="filterDataAPI()">
+            </div>
+            
+            <!-- SECCIÓN: TABLA DE PERSONAJES -->
+            <div id="section-characters">
+                <div class="table-responsive">
+                    <table class="rm-table" id="characters-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" onclick="sortData('id', 'characters')">ID ↕</th>
+                                <th>Avatar</th>
+                                <th class="sortable" onclick="sortData('name', 'characters')">Nombre ↕</th>
+                                <th class="sortable" onclick="sortData('species', 'characters')">Especie ↕</th>
+                                <th class="sortable" onclick="sortData('gender', 'characters')">Género ↕</th>
+                                <th class="sortable" onclick="sortData('type', 'characters')">Tipo ↕</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <tr><td colspan="6" style="text-align: center;">Abriendo portal...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Paginación de Personajes -->
+                <div class="pagination">
+                    <button id="btn-prev-char" class="btn-secondary" onclick="changePage('characters', -1)">Anterior</button>
+                    <span id="page-info-char">Página 1</span>
+                    <button id="btn-next-char" class="btn-secondary" onclick="changePage('characters', 1)">Siguiente</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: TABLA DE EPISODIOS -->
+            <div id="section-episodes" class="hidden">
+                <div class="table-responsive">
+                    <table class="rm-table" id="episodes-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" onclick="sortData('id', 'episodes')">ID ↕</th>
+                                <th class="sortable" onclick="sortData('episode', 'episodes')">Código ↕</th>
+                                <th class="sortable" onclick="sortData('name', 'episodes')">Nombre del Episodio ↕</th>
+                                <th class="sortable" onclick="sortData('air_date', 'episodes')">Fecha de Emisión ↕</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="episodes-table-body">
+                            <tr><td colspan="5" style="text-align: center;">Abriendo portal a los episodios...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Paginación de Episodios -->
+                <div class="pagination">
+                    <button id="btn-prev-ep" class="btn-secondary" onclick="changePage('episodes', -1)">Anterior</button>
+                    <span id="page-info-ep">Página 1</span>
+                    <button id="btn-next-ep" class="btn-secondary" onclick="changePage('episodes', 1)">Siguiente</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PANTALLA: PERFIL DEL PERSONAJE -->
+    <section id="view-profile" class="view-container hidden">
+        <header class="navbar">
+            <h2 class="rm-title-small">Perfil del Personaje</h2>
+            <div>
+                <button class="btn-theme theme-toggle-btn" aria-label="Cambiar tema"></button>
+                <button class="btn-secondary" onclick="navigateTo('view-dashboard')">Volver al Dashboard</button>
+            </div>
+        </header>
+
+        <div class="profile-content">
+            <div class="profile-card">
+                <img id="profile-img" src="" alt="Personaje" class="profile-image">
+                
+                <div id="profile-view-mode">
+                    <h2 id="profile-name" class="rm-title">Nombre</h2>
+                    <p><strong>Especie:</strong> <span id="profile-species"></span></p>
+                    <p><strong>Género:</strong> <span id="profile-gender"></span></p>
+                    <p><strong>Tipo:</strong> <span id="profile-type"></span></p>
+                    <p><strong>Estado:</strong> <span id="profile-status"></span></p>
+                    
+                    <hr style="border-color: var(--rm-border); margin: 15px 0;">
+                    <h3 style="color: var(--rm-green); margin-bottom: 10px;">Apariciones (Episodios)</h3>
+                    <ul id="profile-episodes" class="details-list"></ul>
+
+                    <button class="btn-primary mt-3" onclick="toggleEditMode(true, 'char')">Editar Personaje</button>
+                </div>
+
+                <form id="profile-edit-mode" class="hidden">
+                    <input type="hidden" id="edit-id">
+                    <label>Nombre:</label> <input type="text" id="edit-name" required>
+                    <label>Especie:</label> <input type="text" id="edit-species" required>
+                    <label>Género:</label>
+                    <select id="edit-gender" class="rm-select">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Genderless">Genderless</option>
+                        <option value="unknown">unknown</option>
+                    </select>
+                    <label>Tipo:</label> <input type="text" id="edit-type">
+                    <div class="edit-buttons">
+                        <button type="button" class="btn-secondary" onclick="toggleEditMode(false, 'char')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- PANTALLA: PERFIL DEL EPISODIO -->
+    <section id="view-episode-profile" class="view-container hidden">
+        <header class="navbar">
+            <h2 class="rm-title-small">Ficha del Episodio</h2>
+            <div>
+                <button class="btn-theme theme-toggle-btn" aria-label="Cambiar tema"></button>
+                <button class="btn-secondary" onclick="navigateTo('view-dashboard')">Volver al Dashboard</button>
+            </div>
+        </header>
+
+        <div class="profile-content">
+            <div class="profile-card">
+                <div class="episode-icon">🎬</div>
+                
+                <div id="ep-profile-view-mode">
+                    <h2 id="ep-profile-name" class="rm-title">Nombre Episodio</h2>
+                    <p><strong>Código:</strong> <span id="ep-profile-code"></span></p>
+                    <p><strong>Fecha de Emisión:</strong> <span id="ep-profile-airdate"></span></p>
+                    
+                    <hr style="border-color: var(--rm-border); margin: 15px 0;">
+                    <h3 style="color: var(--rm-green); margin-bottom: 10px;">Personajes Destacados</h3>
+                    <ul id="ep-profile-characters" class="details-list"></ul>
+
+                    <button class="btn-primary mt-3" onclick="toggleEditMode(true, 'ep')">Editar Episodio</button>
+                </div>
+
+                <form id="ep-profile-edit-mode" class="hidden">
+                    <input type="hidden" id="ep-edit-id">
+                    <label>Nombre del Episodio:</label> <input type="text" id="ep-edit-name" required>
+                    <label>Código (Ej: S01E01):</label> <input type="text" id="ep-edit-code" required>
+                    <label>Fecha de Emisión:</label> <input type="text" id="ep-edit-airdate" required>
+                    <div class="edit-buttons">
+                        <button type="button" class="btn-secondary" onclick="toggleEditMode(false, 'ep')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script src="auth.js"></script>
+    <script src="api.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
